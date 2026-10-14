@@ -11,6 +11,10 @@
  *   /prompt restore [名]        无参列种子；带参从包内种子恢复
  *   /prompt stats               本地 journal 汇总（无遥测）
  *
+ *   --json 修饰（list/show）：输出纯 JSON 字符串供 client 选择器面板消费
+ *   （list → [{name,description,tags,source,updated,malformed}]；show → 含 body 的对象；
+ *   错误仍 {kind:'error', text} 不变）。字段集是跨端稳定契约，改动需同步 client 面板。
+ *
  * ⚠ 集成注意：本文件注册的命令名与 index.js 的 Spike 占位段同名（command "prompt"
  * is already registered 会抛错且整插件不激活）。实装落地后必须移除 index.js 占位段
  * （该文件不在本任务改动范围，由集成步骤处理）。
@@ -73,6 +77,12 @@ function splitInput(rawInput) {
   return m ? { sub: m[1].toLowerCase(), args: m[2].trim() } : { sub: '', args: '' };
 }
 
+/** 剥离 --json 标志（client 选择器面板经 remote.commands 消费机器可读输出，避免解析人读 Markdown）。 */
+function takeJsonFlag(args) {
+  const s = String(args ?? '');
+  return { rest: s.replace(/--json/g, '').trim(), json: /(^|\s)--json(\s|$)/.test(s) };
+}
+
 function shortDate(entry) {
   return (entry.updated ?? entry.mtimeIso ?? '').slice(0, 10) || '未知';
 }
@@ -89,8 +99,19 @@ const USAGE = [
   '  /prompt stats                本地使用统计',
 ].join('\n');
 
-async function cmdList(store) {
+async function cmdList(store, json = false) {
   const entries = await store.list();
+  if (json) {
+    // 机器可读：client 选择器面板消费；字段集稳定契约，不因人读文案改动而漂移
+    return ok(JSON.stringify(entries.map((e) => ({
+      name: e.name,
+      description: e.description,
+      tags: e.tags,
+      source: e.source,
+      updated: e.updated ?? e.mtimeIso ?? '',
+      malformed: e.malformed,
+    }))));
+  }
   if (entries.length === 0) {
     const seeds = await store.listSeeds();
     return ok(`提示词库为空（${store.root}）。\n新建：/prompt add <名> <单行正文>\n可从包内种子恢复：${seeds.join('、') || '（无）'}`);
@@ -103,7 +124,7 @@ async function cmdList(store) {
   return ok(`共 ${entries.length} 条提示词（${store.root}）：\n${lines.join('\n')}\n查看：/prompt show <名>；调用：/prompt use <名> [补充语]`);
 }
 
-async function cmdShow(store, name) {
+async function cmdShow(store, name, json = false) {
   if (!name) return err(`/prompt show <名> — 缺少名字。${USAGE.split('\n')[0]}`);
   let entry;
   try {
@@ -111,6 +132,17 @@ async function cmdShow(store, name) {
   } catch (e) {
     if (e?.code === 'PROMPT_NOT_FOUND') return err(await withAvailableNames(e, store));
     return err(errorText(e));
+  }
+  if (json) {
+    // 机器可读：含正文（client 点选后 inputActions.setDraft(body) 用）
+    return ok(JSON.stringify({
+      name: entry.name,
+      description: entry.description,
+      tags: entry.tags,
+      source: entry.source,
+      updated: entry.updated ?? entry.mtimeIso ?? '',
+      body: entry.body,
+    }));
   }
   const tags = entry.tags.length ? `\ntags: ${entry.tags.join(', ')}` : '';
   const bad = entry.malformed ? '\n⚠ frontmatter 解析失败，按纯正文展示' : '';
@@ -256,10 +288,14 @@ async function handlePrompt(invocation, store) {
   switch (sub) {
     case '':
       return cmdList(store);
-    case 'list':
-      return cmdList(store);
-    case 'show':
-      return cmdShow(store, args.split(/\s+/)[0] ?? '');
+    case 'list': {
+      const { json } = takeJsonFlag(args);
+      return cmdList(store, json);
+    }
+    case 'show': {
+      const { rest, json } = takeJsonFlag(args);
+      return cmdShow(store, rest.split(/\s+/)[0] ?? '', json);
+    }
     case 'add':
       return cmdAdd(store, args);
     case 'edit':

@@ -7,10 +7,12 @@
   "description": "User-owned prompt library for DSH: ~/.dsh/prompts/*.md with YAML frontmatter, seed-copy-on-first-run, /prompt slash commands + prompt_* model tools. No cloud, no telemetry.",
   "exports": {
     ".": "./index.js",
+    "./client": "./client.js",
     "./package.json": "./package.json"
   },
   "files": [
     "index.js",
+    "client.js",
     "src",
     "cordis.patch.yml",
     "README.md"
@@ -21,6 +23,14 @@
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-api-remotes"
+      ]
     }
   }
 }

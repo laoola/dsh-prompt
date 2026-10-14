@@ -351,3 +351,46 @@ test('stats：容忍坏行与未知事件类型（journal 是 best-effort 数据
   assert.match(r.text, /其他 1/); // 未知事件计入「其他」
   assert.doesNotMatch(r.text, /undefined/);
 });
+
+test('--json：list/show 机器可读输出（client 选择器面板契约；--json 传给其它子命令不误伤）', async () => {
+  const { call, store } = await harness();
+  await store.add({ name: 'demo', description: '描述 "quoted"', tags: ['t1', 't2'], body: '正文ABC' });
+
+  // list --json：纯 JSON 数组，字段集稳定契约，不含正文
+  const rl = await call(' list --json');
+  assert.equal(rl.kind, 'success');
+  const arr = JSON.parse(rl.text);
+  const demo = arr.find((e) => e.name === 'demo');
+  assert.ok(demo, 'list --json 含 demo');
+  assert.equal(demo.description, '描述 "quoted"');
+  assert.deepEqual(demo.tags, ['t1', 't2']);
+  assert.equal(demo.source, 'user');
+  assert.ok(!('body' in demo), 'list --json 不含正文');
+
+  // show --json：含正文对象
+  const rs = await call(' show demo --json');
+  assert.equal(rs.kind, 'success');
+  const obj = JSON.parse(rs.text);
+  assert.equal(obj.name, 'demo');
+  assert.equal(obj.body, '正文ABC');
+  assert.deepEqual(obj.tags, ['t1', 't2']);
+
+  // show 不存在 --json：错误仍 {kind:'error', text}，不变成 JSON
+  const re = await call(' show ghost --json');
+  assert.equal(re.kind, 'error');
+  assert.match(re.text, /ghost/);
+  assert.throws(() => JSON.parse(re.text));
+
+  // 名字含 "--json" 子串不受误伤：takeJsonFlag 按整词匹配，rm "x--jsony" 仍按名字处理
+  await store.add({ name: 'x--jsony', body: 'b' });
+  const rx = await call(' rm x--jsony');
+  assert.equal(rx.kind, 'success');
+
+  // 空库 list --json：输出 []（不是人读指引文案）
+  const { store: emptyStore } = await makeStore();
+  const { ctx, registered } = makeCtx();
+  registerCommands(ctx, { store: emptyStore });
+  const re2 = await registered[0].handler({ rawInput: 'list --json', agent: { followup() {} } });
+  assert.equal(re2.kind, 'success');
+  assert.deepEqual(JSON.parse(re2.text), []);
+});
