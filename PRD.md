@@ -137,7 +137,7 @@ node --test test/store.test.mjs test/tools.test.mjs test/commands.test.mjs   # �
 
 **里程碑**：
 - **M1（功能闭环，本机）**：库核心 + 种子复制 + 命令/工具双面 + journal + 单测 + 激活冒烟（含 commands Spike）。
-- **M2（分发硬化）**：他机安装验收 + README + `/prompt stats` 汇总 + `/prompt use` 拼接规则打磨（长提示词截断策略、补充语拼接格式）+ **提示词选择器 UI**（composer decoration：库面板点选 → 填输入框，前置 client 桥 Spike——见第 9 节追加裁决）。〔种子定稿已于 2026-10-14 审计修复轮完成：6 条实装 code-review / commit-msg / summarize / translate-cn / bug-report / regex-explain；同轮修复审计 ①followup 异步防御 ②Windows 保留名 ③unquote 写读对称，39/39 测试〕
+- **M2（分发硬化）**：他机安装验收 + README + `/prompt stats` 汇总 + `/prompt use` 拼接规则打磨（长提示词截断策略、补充语拼接格式）+ **提示词选择器 UI**（composer decoration：库面板点选 → 填输入框，前置 client 桥 Spike——见第 9 节追加裁决）。〔进度 2026-10-14 M2 收口：种子扩至 **12 条**（原 6 条 + unit-test / refactor-safe / explain-code / security-review / root-cause / docs-api，来源：prompt-architects 35 条、dev.to 资深工程师 7 场景、苏三说技术中文 10 条综合提炼）；选择器 UI **实机全链路通过**（按钮/面板/过滤/点选填入不自动发送，client 经 `commands.execute(sid,line,[])` 三参签名走 `--json` 通道）；README 更新；独立 git 仓库 M2 提交 `f346aeb`（40/40 测试）。**仅剩他机安装演练**〕
 - **V1.5 候选**：第 5 节暂缓池按 30 天指标决定。
 
 ## 9. 开放问题（2026-10-14 已拍板）
