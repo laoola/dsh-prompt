@@ -1,0 +1,26 @@
+{
+  "name": "dsh-prompt",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "description": "User-owned prompt library for DSH: ~/.dsh/prompts/*.md with YAML frontmatter, seed-copy-on-first-run, /prompt slash commands + prompt_* model tools. No cloud, no telemetry.",
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "src",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "@deepseek-ai/dsh": "^0.2.0-rc.0"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
