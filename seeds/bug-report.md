@@ -1,7 +1,7 @@
 ---
 name: bug-report
 description: 从报错现场整理可复现的 bug 报告：环境、步骤、期望/实际、最小复现
-tags: [debug, report]
+tags: [调试, 报告]
 created: 2026-10-14T00:00:00.000Z
 updated: 2026-10-14T00:00:00.000Z
 source: seed

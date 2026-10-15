@@ -1,7 +1,7 @@
 ---
 name: translate-cn
 description: 中英互译：先忠实直译，再给流畅意译，术语表可追加
-tags: [translate, i18n]
+tags: [翻译, 国际化]
 created: 2026-10-14T00:00:00.000Z
 updated: 2026-10-14T00:00:00.000Z
 source: seed

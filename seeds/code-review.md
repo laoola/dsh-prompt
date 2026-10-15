@@ -1,7 +1,7 @@
 ---
 name: code-review
 description: 代码评审口径：先正确性后可读性，意见须带依据与改法
-tags: [review, quality]
+tags: [评审, 质量]
 created: 2026-10-14T00:00:00.000Z
 updated: 2026-10-14T00:00:00.000Z
 source: seed

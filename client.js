@@ -84,14 +84,24 @@ window.__ModuleLoader__.load({
         width: 'calc(100% - 24px)', background: 'transparent', color: 'inherit',
       },
       list: { overflowY: 'auto', padding: '0 6px 8px', margin: 0, listStyle: 'none' },
-      item: { padding: '7px 8px', borderRadius: '8px' },
-      name: { fontWeight: 600 },
+      item: { padding: '4px 8px', borderRadius: '6px' },
+      row1: { display: 'flex', alignItems: 'baseline', gap: '6px', minWidth: 0 },
+      name: { fontWeight: 600, whiteSpace: 'nowrap', flexShrink: 0 },
       desc: {
-        color: '#57606a', marginTop: '2px', overflow: 'hidden',
+        color: '#57606a', marginTop: '1px', overflow: 'hidden',
         textOverflow: 'ellipsis', whiteSpace: 'nowrap',
       },
-      tags: { color: '#0969da', fontSize: '11px', marginTop: '2px' },
-      tagGap: { marginRight: '6px' },
+      tags: {
+        color: '#0969da', fontSize: '11px', whiteSpace: 'nowrap', overflow: 'hidden',
+        textOverflow: 'ellipsis', flexShrink: 1, minWidth: 0, textAlign: 'right',
+      },
+      chipRow: { display: 'flex', flexWrap: 'wrap', gap: '4px', padding: '0 12px 8px' },
+      chip: {
+        appearance: 'none', font: 'inherit', fontSize: '11px', lineHeight: 1.4,
+        padding: '1px 8px', borderRadius: '10px', cursor: 'pointer',
+        border: '1px solid rgba(0,0,0,0.18)', background: 'transparent', color: '#57606a',
+      },
+      chipOn: { background: '#0969da', borderColor: '#0969da', color: '#ffffff' },
       empty: { padding: '18px 14px', color: '#57606a', textAlign: 'center', lineHeight: 1.6 },
       error: { padding: '4px 14px 10px', color: '#cf222e', whiteSpace: 'pre-wrap' },
       badge: {
@@ -113,8 +123,23 @@ window.__ModuleLoader__.load({
       const [entries, setEntries] = React.useState(null); // null = 加载中
       const [error, setError] = React.useState(null);
       const [filter, setFilter] = React.useState('');
+      const [tag, setTag] = React.useState(null); // 点选标签过滤（单选，再点取消）
       const [busyName, setBusyName] = React.useState(null);
       const [panelPos, setPanelPos] = React.useState(null);
+
+      // 库内全部标签聚合（按出现条数降序、同数按 zh 序）：搜索框下方点选过滤条的数据源。
+      const tagCounts = React.useMemo(() => {
+        const m = new Map();
+        for (const e of entries || []) {
+          if (!Array.isArray(e.tags)) continue;
+          for (const t of e.tags) {
+            const s = String(t).trim();
+            if (!s) continue;
+            m.set(s, (m.get(s) || 0) + 1);
+          }
+        }
+        return [...m.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'zh'));
+      }, [entries]);
 
       const btnRef = React.useRef(null);
       const panelRef = React.useRef(null);
@@ -213,12 +238,15 @@ window.__ModuleLoader__.load({
       }, [sid, inputActions, busyName]);
 
       const kw = filter.trim().toLowerCase();
+      const matchKw = (e) => !kw
+        || String(e.name || '').toLowerCase().includes(kw)
+        || String(e.description || '').toLowerCase().includes(kw)
+        || (Array.isArray(e.tags)
+          && e.tags.some((t) => String(t).toLowerCase().includes(kw)));
+      const matchTag = (e) => !tag
+        || (Array.isArray(e.tags) && e.tags.some((t) => String(t) === tag));
       const visible = entries
-        ? entries.filter((e) => !kw
-          || String(e.name || '').toLowerCase().includes(kw)
-          || String(e.description || '').toLowerCase().includes(kw)
-          || (Array.isArray(e.tags)
-            && e.tags.some((t) => String(t).toLowerCase().includes(kw))))
+        ? entries.filter((e) => matchKw(e) && matchTag(e)) // 文本过滤与标签过滤叠加(AND)
         : null;
 
       return h('span', { style: S.wrap },
@@ -252,6 +280,16 @@ window.__ModuleLoader__.load({
             value: filter,
             onChange: (e) => setFilter(e.target.value),
           }),
+          tagCounts.length
+            ? h('div', { style: S.chipRow },
+              tagCounts.map(([t, n]) => h('button', {
+                key: t,
+                type: 'button',
+                title: '按标签「' + t + '」过滤（' + n + ' 条），再点取消',
+                style: Object.assign({}, S.chip, tag === t ? S.chipOn : null),
+                onClick: () => setTag(tag === t ? null : t),
+              }, '#' + t)))
+            : null,
           error ? h('div', { style: S.error }, error) : null,
           !error && entries === null ? h('div', { style: S.empty }, '加载中…') : null,
           !error && entries !== null && visible.length === 0
@@ -271,16 +309,16 @@ window.__ModuleLoader__.load({
                 }),
                 onClick: () => { if (!entry.malformed) pick(entry); },
               },
-                h('div', null,
+                h('div', { style: S.row1 },
                   h('span', { style: S.name }, entry.name || '(未命名)'),
                   entry.malformed ? h('span', { style: S.badge }, '损坏') : null,
                   busyName === entry.name ? h('span', { style: S.busy }, '读取中…') : null,
+                  h('span', { style: S.spacer }),
+                  Array.isArray(entry.tags) && entry.tags.length
+                    ? h('span', { style: S.tags }, entry.tags.map((t) => '#' + t).join(' '))
+                    : null,
                 ),
                 entry.description ? h('div', { style: S.desc }, entry.description) : null,
-                Array.isArray(entry.tags) && entry.tags.length
-                  ? h('div', { style: S.tags },
-                    entry.tags.map((t, j) => h('span', { key: j, style: S.tagGap }, '#' + t)))
-                  : null,
               )))
             : null,
         ),

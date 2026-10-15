@@ -1,7 +1,7 @@
 ---
 name: explain-code
 description: 代码讲解：输入输出、关键步骤、设计意图与模式、坑与改进点
-tags: [explain, onboarding]
+tags: [讲解, 入门]
 created: 2026-10-14T00:00:00.000Z
 updated: 2026-10-14T00:00:00.000Z
 source: seed

@@ -1,7 +1,7 @@
 ---
 name: summarize
 description: 长文总结：先三句话结论，再分节要点，末尾列开放问题
-tags: [summary, reading]
+tags: [总结, 阅读]
 created: 2026-10-14T00:00:00.000Z
 updated: 2026-10-14T00:00:00.000Z
 source: seed

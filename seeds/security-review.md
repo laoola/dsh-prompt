@@ -1,7 +1,7 @@
 ---
 name: security-review
 description: 安全审计：从信任边界追踪注入，鉴权与认证分开查，按严重度给攻击路径
-tags: [security, review]
+tags: [安全, 评审]
 created: 2026-10-14T00:00:00.000Z
 updated: 2026-10-14T00:00:00.000Z
 source: seed

@@ -1,7 +1,7 @@
 ---
 name: docs-api
 description: 接口文档生成：请求/响应/错误条件/示例用法/业务逻辑说明
-tags: [docs, api]
+tags: [文档, 接口]
 created: 2026-10-14T00:00:00.000Z
 updated: 2026-10-14T00:00:00.000Z
 source: seed

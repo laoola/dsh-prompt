@@ -1,7 +1,7 @@
 ---
 name: root-cause
 description: 根因定位：候选按可能性排序，含非代码因素，给二分策略与证伪证据
-tags: [debug, diagnosis]
+tags: [调试, 诊断]
 created: 2026-10-14T00:00:00.000Z
 updated: 2026-10-14T00:00:00.000Z
 source: seed

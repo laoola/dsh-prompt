@@ -1,7 +1,7 @@
 ---
 name: commit-msg
 description: commit message 规范：type(scope) 祈使句摘要，正文讲动机
-tags: [git, commit]
+tags: [git, 提交]
 created: 2026-10-14T00:00:00.000Z
 updated: 2026-10-14T00:00:00.000Z
 source: seed

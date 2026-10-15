@@ -1,7 +1,7 @@
 ---
 name: refactor-safe
 description: 行为保持重构：小步可交付，公共 API 不动，疑似 bug 只标记不静默修
-tags: [refactor, quality]
+tags: [重构, 质量]
 created: 2026-10-14T00:00:00.000Z
 updated: 2026-10-14T00:00:00.000Z
 source: seed

@@ -1,7 +1,7 @@
 ---
 name: regex-explain
 description: 逐段拆解正则表达式：每段的字面含义+示例匹配，再给常见误匹配
-tags: [regex, explain]
+tags: [正则, 讲解]
 created: 2026-10-14T00:00:00.000Z
 updated: 2026-10-14T00:00:00.000Z
 source: seed

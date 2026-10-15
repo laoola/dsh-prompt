@@ -1,7 +1,7 @@
 ---
 name: unit-test
 description: 生成单元测试：覆盖成功/失败/边界，mock 外部依赖，测行为不测实现
-tags: [test, quality]
+tags: [测试, 质量]
 created: 2026-10-14T00:00:00.000Z
 updated: 2026-10-14T00:00:00.000Z
 source: seed
