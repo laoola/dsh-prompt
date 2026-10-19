@@ -1,9 +1,9 @@
 ---
-name: bug-report
-description: 从报错现场整理可复现的 bug 报告：环境、步骤、期望/实际、最小复现
-tags: [调试, 报告]
+name: 报bug
+description: 整理可复现的缺陷报告，遇到 bug 时点它
+tags: [排障]
 created: 2026-10-14T00:00:00.000Z
-updated: 2026-10-14T00:00:00.000Z
+updated: 2026-10-19T13:28:59.742Z
 source: seed
 ---
 把下面描述的问题整理成一份可复现的 bug 报告，按此结构：
